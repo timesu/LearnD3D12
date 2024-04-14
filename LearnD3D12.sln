@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.LearnWindow", "01.LearnWindow.vcxproj", "{03CE1221-E026-4464-B516-4E6C3E28FDD8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01.LearnWindow", "01.LearnWindow\01.LearnWindow.vcxproj", "{03CE1221-E026-4464-B516-4E6C3E28FDD8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02.LearnSingleTriangle", "02.LearnSingleTriangle\02.LearnSingleTriangle.vcxproj", "{06562EF0-1A34-46CA-B050-1C656B18413E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,11 +23,19 @@ Global
 		{03CE1221-E026-4464-B516-4E6C3E28FDD8}.Release|x64.Build.0 = Release|x64
 		{03CE1221-E026-4464-B516-4E6C3E28FDD8}.Release|x86.ActiveCfg = Release|Win32
 		{03CE1221-E026-4464-B516-4E6C3E28FDD8}.Release|x86.Build.0 = Release|Win32
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Debug|x64.ActiveCfg = Debug|x64
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Debug|x64.Build.0 = Debug|x64
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Debug|x86.ActiveCfg = Debug|Win32
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Debug|x86.Build.0 = Debug|Win32
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Release|x64.ActiveCfg = Release|x64
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Release|x64.Build.0 = Release|x64
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Release|x86.ActiveCfg = Release|Win32
+		{06562EF0-1A34-46CA-B050-1C656B18413E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {01DDF6D3-7350-4BBC-B805-46523ABF6E7F}
+		SolutionGuid = {74C70338-4817-4476-BBA8-9DEA7B6A0527}
 	EndGlobalSection
 EndGlobal
