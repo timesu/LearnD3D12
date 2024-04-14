@@ -29,4 +29,23 @@ class SingleTriangle
 protected:
 	SingleTriangle(HINSTANCE hInstance);
 
+public:
+	static SingleTriangle* GetApp();
+
+	HINSTANCE AppInst() const;
+	HWND MainWnd()const;
+	
+	int Run();
+
+	bool Initialize();
+	LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+	bool InitMainWindow();
+
+protected:
+	HINSTANCE mhAppInst = nullptr; // application instance handle
+	HWND      mhWnd = nullptr;
+
+
+
 };
