@@ -23,6 +23,11 @@ Reason: The visual studio 2022 intergraded a HLSL compiler.
         since we compile the shader with D3DCompile function by ourself.
 Resource : https://stackoverflow.com/a/31088031/24316308
 
+## Screen behaviour
+1.
+Error: The screen background is black all the time
+Reason: Add ClearRenderTargetView
+
 ## Reference:
 (English)Micsoft D3D12 sample : https://github.com/microsoft/DirectX-Graphics-Samples
 (English)Introduction to Game Programming with D3D12 : https://github.com/d3dcoder/d3d12book
