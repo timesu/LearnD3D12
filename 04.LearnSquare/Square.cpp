@@ -251,7 +251,8 @@ void Square::BuildGeometry()
     {
         // front face
         0, 1, 2,
-        0, 2, 3
+      //  0, 2, 3
+        2,3,0
     };
 
    // const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -309,7 +310,7 @@ void Square::BuildGeometry()
     m_device->CreateCommittedResource(
         &heapUpload,
         D3D12_HEAP_FLAG_NONE,
-        &buffer,
+        &indexBuffer,
         D3D12_RESOURCE_STATE_GENERIC_READ,
         nullptr,
         IID_PPV_ARGS(&m_indexBuffer));
