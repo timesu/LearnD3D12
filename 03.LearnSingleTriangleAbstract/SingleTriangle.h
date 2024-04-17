@@ -9,7 +9,8 @@
 #include <string>
 #include <wrl.h>
 #include <shellapi.h>
-#include "d3dx12.h"
+#include <vector>
+//#include "d3dx12.h"
 
 using namespace DirectX;
 

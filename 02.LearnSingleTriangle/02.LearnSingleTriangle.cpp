@@ -340,6 +340,7 @@ void BuildGeometry()
     m_scissorRect.top = 0;
     m_scissorRect.right = 1280;
     m_scissorRect.bottom = 720;
+    m_scissorRect.bottom = 720;
 
 
     const UINT vertexBufferSize = sizeof(triangleVertices);
