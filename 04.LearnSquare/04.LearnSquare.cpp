@@ -12,17 +12,17 @@
 #include <wrl.h>
 #include <shellapi.h>
 //#include "d3dx12.h"
-#include "SingleTriangle.h"
+#include "Square.h"
 
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
 
-    SingleTriangle Triangle(hInstance);
-    Triangle.InitMainWindow();
-    Triangle.LoadPipeLine();
-    Triangle.LoadAssets();
+    Square square(hInstance);
+    square.InitMainWindow();
+    square.LoadPipeLine();
+    square.LoadAssets();
 
     MSG msg = {};
     while (msg.message != WM_QUIT)
