@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03.LearnSingleTriangleAbstr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04.LearnSquare", "04.LearnSquare\04.LearnSquare.vcxproj", "{B6E577FA-563E-467A-8873-834881CD500F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05.LearnGround", "05.LearnGround\05.LearnGround.vcxproj", "{FF17FD6E-B596-4150-AE07-FC0517F58907}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{B6E577FA-563E-467A-8873-834881CD500F}.Release|x64.Build.0 = Release|x64
 		{B6E577FA-563E-467A-8873-834881CD500F}.Release|x86.ActiveCfg = Release|Win32
 		{B6E577FA-563E-467A-8873-834881CD500F}.Release|x86.Build.0 = Release|Win32
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Debug|x64.ActiveCfg = Debug|x64
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Debug|x64.Build.0 = Debug|x64
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Debug|x86.ActiveCfg = Debug|Win32
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Debug|x86.Build.0 = Debug|Win32
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Release|x64.ActiveCfg = Release|x64
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Release|x64.Build.0 = Release|x64
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Release|x86.ActiveCfg = Release|Win32
+		{FF17FD6E-B596-4150-AE07-FC0517F58907}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
