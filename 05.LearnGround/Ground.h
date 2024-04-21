@@ -45,6 +45,9 @@ public:
 
 	void LoadAssets();
 	void BuildRootSignature();
+
+	void BuildCamera();
+
 	void BuildConstangBuffer();
 	void BuildShadersAndInputLayout();
 	void BuildGeometry();
@@ -96,6 +99,8 @@ protected:
 	ComPtr<ID3D12Resource> m_constantBuffer;
 	UINT8* m_pCbvDataBegin;
 
+	//Constant buffers must be a multiple of the minimum hardware
+    // allocation size (usually 256 bytes). 
 	struct SceneConstantBuffer
 	{
 		XMFLOAT4X4 WorldViewProj = XMFLOAT4X4(
@@ -104,7 +109,21 @@ protected:
 			0.0f, 0.0f, 1.0f, 0.0f,
 			0.0f, 0.0f, 0.0f, 1.0f);
 
-	}m_constantbuffer;
+		/*XMFLOAT4 offset;
+		float padding[60];*/
+		// 256 = 16 * 4 + 48 * 4£»
+		float padding[48];
+		//or size = (byteSize + 255) & ~255;
+		// 
+
+	}m_constantBufferData;
+
+	XMFLOAT4X4 mWorld = XMFLOAT4X4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
 
 	ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;
@@ -126,5 +145,6 @@ protected:
 	ComPtr<ID3DBlob> vertexShader;
 	ComPtr<ID3DBlob> pixelShader;
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+
 
 };

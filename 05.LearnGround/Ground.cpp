@@ -2,6 +2,8 @@
 
 #include "DirectXColors.h"
 
+#include "d3dx12.h"
+
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 
@@ -72,7 +74,7 @@ bool Ground::InitMainWindow()
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"04.LearnGround",
+        L"05.LearnGround",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -200,6 +202,8 @@ void Ground::LoadAssets()
         BuildRootSignature();
         BuildShadersAndInputLayout();
         BuildGeometry();
+        BuildCamera();
+        BuildConstangBuffer();
         BuildPSO();
 
     
@@ -209,17 +213,39 @@ void Ground::BuildRootSignature()
 {
    // CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
     //rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-    D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+  /*  D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
     rootSignatureDesc.NumParameters = 0;
     rootSignatureDesc.pParameters = nullptr;
     rootSignatureDesc.NumStaticSamplers = 0;
     rootSignatureDesc.pStaticSamplers = nullptr;
-    rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+    rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;*/
 
-    ComPtr<ID3DBlob> signature;
+  /*  ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
     D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+    m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));*/
+
+
+    D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+    CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+
+    ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+    rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
+
+    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+    ComPtr<ID3DBlob> signature;
+    ComPtr<ID3DBlob> error;
+    D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
     m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+
 }
 
 void Ground::BuildShadersAndInputLayout()
@@ -247,18 +273,28 @@ void Ground::BuildGeometry()
 
     Vertex GroundVertices[] =
     {
-        { { 0.25f, 0.25f , 0.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+       /* { { 0.25f, 0.25f , 0.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
         { { 0.25f, -0.25f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
         { { -0.25f, -0.25f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-        { { -0.25f, 0.25f , 0.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
+        { { -0.25f, 0.25f , 0.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
+       /* { { 0.25f, 0.0f , 0.25f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+        { { 0.25f, 0.0f , -0.25f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+        { { -0.25f, 0.0f , -0.25f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+        { { -0.25f, 0.0f , 0.25f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
+         { { 1.0f, 0.0f , 1.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+        { { 1.0f, 0.0f , -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+        { { -1.0f, 0.0f , -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+        { { -1.0f, 0.0f , 1.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
     };
 
     uint16_t GroundIndices[] =
     {
         // front face
-        0, 1, 2,
-      //  0, 2, 3
-        2,3,0
+     /*   0, 1, 2,
+        0, 2, 3*/
+      //  2,3,0
+        0,2,1,
+        0,3,2
     };
 
    // const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -347,9 +383,38 @@ void Ground::BuildGeometry()
 
 }
 
+void Ground::BuildCamera()
+{
+    XMMATRIX cameraProjMat;
+    XMMATRIX cameraViewMat;
+
+    auto cameraPosition = XMFLOAT4(0.0f, 3.0f, -1.0f, 0.0f);
+    auto cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+    auto cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
+
+    XMVECTOR cPos = XMLoadFloat4(&cameraPosition);
+    XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
+    XMVECTOR cUp = XMLoadFloat4(&cameraUp);
+
+    //XMMATRIX modelMat = 
+
+    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)1280 / (float)800, 1.0f, 100.0f);
+    cameraProjMat = tmpProjMat;
+
+    XMMATRIX tmpViewMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
+    cameraViewMat = tmpViewMat;
+
+    XMMATRIX worldMat = XMLoadFloat4x4(&mWorld);
+    XMMATRIX worldViewProj = worldMat * cameraViewMat * cameraProjMat;
+
+
+    XMStoreFloat4x4(&m_constantBufferData.WorldViewProj, worldViewProj);
+    
+}
+
 void Ground::BuildConstangBuffer()
 {
-    const UINT constantBufferSize = sizeof(m_constantbuffer);    // CB size is required to be 256-byte aligned.
+    const UINT constantBufferSize = sizeof(m_constantBufferData);    // CB size is required to be 256-byte aligned.
 
     D3D12_HEAP_PROPERTIES heapUpload;
     heapUpload.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -397,7 +462,7 @@ void Ground::BuildConstangBuffer()
     readRange.End = 0;
     m_constantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&m_pCbvDataBegin));
     memcpy(m_pCbvDataBegin, &m_constantBufferData, sizeof(m_constantBufferData));
-    m_vertexBuffer->Unmap(0, nullptr);
+
  
 }
 
@@ -496,6 +561,14 @@ void Ground::SetCommandList()
     m_scissorRect = { 0, 0, 1280, 720 };
 
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+
+    ID3D12DescriptorHeap* ppHeaps[] = { m_cbvHeap.Get() };
+    m_commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+    m_commandList->SetGraphicsRootDescriptorTable(0, m_cbvHeap->GetGPUDescriptorHandleForHeapStart());
+
+
+
+
     m_commandList->RSSetViewports(1, &m_viewport);
     m_commandList->RSSetScissorRects(1, &m_scissorRect);
 
