@@ -281,7 +281,7 @@ void Ground::BuildGeometry()
         { { 0.25f, 0.0f , -0.25f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
         { { -0.25f, 0.0f , -0.25f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
         { { -0.25f, 0.0f , 0.25f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
-         { { 1.0f, 0.0f , 1.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+        { { 1.0f, 0.0f , 1.0f },  { 0.5f, 0.0f, 0.0f, 1.0f } },
         { { 1.0f, 0.0f , -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
         { { -1.0f, 0.0f , -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
         { { -1.0f, 0.0f , 1.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
@@ -388,7 +388,7 @@ void Ground::BuildCamera()
     XMMATRIX cameraProjMat;
     XMMATRIX cameraViewMat;
 
-    auto cameraPosition = XMFLOAT4(0.0f, 3.0f, -1.0f, 0.0f);
+    auto cameraPosition = XMFLOAT4(0.0f, 5.0f, -4.0f, 0.0f);
     auto cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
     auto cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -398,7 +398,7 @@ void Ground::BuildCamera()
 
     //XMMATRIX modelMat = 
 
-    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)1280 / (float)800, 1.0f, 100.0f);
+    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)1280 / (float)720, 4.0f, 20.0f);
     cameraProjMat = tmpProjMat;
 
     XMMATRIX tmpViewMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
