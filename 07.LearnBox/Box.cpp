@@ -1,4 +1,4 @@
-#include "Ground.h"
+#include "Box.h"
 
 #include "DirectXColors.h"
 
@@ -68,14 +68,14 @@ bool Ground::InitMainWindow()
     windowClass.lpfnWndProc = MainWndProc;
     windowClass.hInstance = mhAppInst;
     windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    windowClass.lpszClassName = L"LearnMoveCamera";
+    windowClass.lpszClassName = L"LearnBox";
     RegisterClassEx(&windowClass);
 
     RECT windowRect = { 0, 0, 1280, 720 };
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"06.LearnMoveCamera",
+        L"07.LearnBox",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -252,7 +252,7 @@ void Ground::BuildRootSignature()
     rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
     rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
     rootParameters[0].DescriptorTable.pDescriptorRanges = &ranges[0];
-    rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+    rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
   //  CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
    // rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
@@ -308,30 +308,86 @@ void Ground::BuildGeometry()
     //    { { -0.25f, -0.25f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
     //};
 
+    //Vertex GroundVertices[] =
+    //{
+    //   /* { { 0.25f, 0.25f , 0.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+    //    { { 0.25f, -0.25f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { -0.25f, -0.25f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { -0.25f, 0.25f , 0.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
+    //   /* { { 0.25f, 0.0f , 0.25f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+    //    { { 0.25f, 0.0f , -0.25f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { -0.25f, 0.0f , -0.25f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { -0.25f, 0.0f , 0.25f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
+    //    { { 1.0f, 0.0f , 1.0f },  { 0.5f, 0.0f, 0.0f, 1.0f } },
+    //    { { 1.0f, 0.0f , -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+    //    { { -1.0f, 0.0f , -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+    //    { { -1.0f, 0.0f , 1.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
+    //};
+
     Vertex GroundVertices[] =
     {
-       /* { { 0.25f, 0.25f , 0.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+        Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
+        Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) }),
+        Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) }),
+        Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) }),
+        Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) }),
+        Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) }),
+        Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) }),
+        Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
+    };
+
+ /*   Vertex GroundVertices[] =
+    {
+        { { 0.25f, 0.25f , 0.0f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
         { { 0.25f, -0.25f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
         { { -0.25f, -0.25f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-        { { -0.25f, 0.25f , 0.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
-       /* { { 0.25f, 0.0f , 0.25f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
-        { { 0.25f, 0.0f , -0.25f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-        { { -0.25f, 0.0f , -0.25f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-        { { -0.25f, 0.0f , 0.25f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
-        { { 1.0f, 0.0f , 1.0f },  { 0.5f, 0.0f, 0.0f, 1.0f } },
-        { { 1.0f, 0.0f , -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-        { { -1.0f, 0.0f , -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-        { { -1.0f, 0.0f , 1.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
-    };
+        { { -0.25f, 0.25f , 0.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
+    };*/
+  //   /* { { 0.25f, 0.0f , 0.25f }, { 0.5f, 0.0f, 0.0f, 1.0f } },
+  //    { { 0.25f, 0.0f , -0.25f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+  //    { { -0.25f, 0.0f , -0.25f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+  //    { { -0.25f, 0.0f , 0.25f }, { 1.0f, 0.5f, 0.5f, 1.0f } }*/
+  //    { { 1.0f, 0.0f , 1.0f },  { 0.5f, 0.0f, 0.0f, 1.0f } },
+  //    { { 1.0f, 0.0f , -1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+  //    { { -1.0f, 0.0f , -1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+  //    { { -1.0f, 0.0f , 1.0f }, { 1.0f, 0.5f, 0.5f, 1.0f } }
+  //};
+
+    //uint16_t GroundIndices[] =
+    //{
+    //    //  /*  0,2,1,
+    //    //    0,3,2*/
+
+    //        // front face
+    //        0, 1, 2,
+    //        0, 2, 3
+    //};
 
     uint16_t GroundIndices[] =
     {
         // front face
-     /*   0, 1, 2,
-        0, 2, 3*/
-      //  2,3,0
-        0,2,1,
-        0,3,2
+        0, 1, 2,
+        0, 2, 3,
+
+        // back face
+        4, 6, 5,
+        4, 7, 6,
+
+        // left face
+        4, 5, 1,
+        4, 1, 0,
+
+        // right face
+        3, 2, 6,
+        3, 6, 7,
+
+        // top face
+        1, 5, 6,
+        1, 6, 2,
+
+        // bottom face
+        4, 0, 3,
+        4, 3, 7
     };
 
    // const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -426,14 +482,15 @@ void Ground::BuildCamera()
     XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
     XMVECTOR cUp = XMLoadFloat4(&cameraUp);
 
-    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)1280 / (float)720, 0.1f, 20.0f);
+    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), (float)1280 / (float)720, 0.1f, 1000.0f);
     XMStoreFloat4x4(&cameraProjMat, tmpProjMat);
 
     XMMATRIX tmpViewMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
     XMStoreFloat4x4(&cameraViewMat, tmpViewMat);
 
     XMMATRIX worldMat = XMLoadFloat4x4(&mWorld);
-    XMMATRIX worldViewProj = worldMat * tmpViewMat * tmpProjMat;
+     XMMATRIX worldViewProj = worldMat * tmpViewMat * tmpProjMat;
+   // XMMATRIX worldViewProj = tmpProjMat * tmpViewMat * worldMat;
 
     XMStoreFloat4x4(&m_constantBufferData.WorldViewProj, XMMatrixTranspose(worldViewProj));
     
@@ -464,9 +521,7 @@ void Ground::BuildConstangBuffer()
     buffer.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
     buffer.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-
-
-     m_device->CreateCommittedResource(
+    m_device->CreateCommittedResource(
         &heapUpload,
         D3D12_HEAP_FLAG_NONE,
         &buffer,
@@ -558,8 +613,6 @@ void Ground::BuildPSO()
 void Ground::OnUpdate()
 {
     UpdateCamera();
-
-    
 }
 
 void Ground::UpdateCamera()
@@ -572,37 +625,27 @@ void Ground::UpdateCamera()
     XMMATRIX cameraViewMatrix_tmp = XMLoadFloat4x4(&cameraViewMat);
 
     if (GetAsyncKeyState('W')) {
-       // cameraViewMatrix_tmp *= XMMatrixTranslation(0.0f, 0.0f, -0.01f);
-        cameraPosition.z += 0.01;
+        cameraViewMatrix_tmp *= XMMatrixTranslation(0.0f, 0.0f, -0.01f);
     }
     else if (GetAsyncKeyState('S')) {
-       // cameraViewMatrix_tmp *= XMMatrixTranslation(0.0f, 0.0f, 0.01f);
-        cameraPosition.z -= 0.01;
+        cameraViewMatrix_tmp *= XMMatrixTranslation(0.0f, 0.0f, 0.01f);
     }
 
     //Move Right and Left
     if (GetAsyncKeyState('A')) {
-       // cameraViewMatrix_tmp *= XMMatrixTranslation(-0.01f, 0.0f, 0.0f);
-        cameraPosition.x -= 0.01;
+        cameraViewMatrix_tmp *= XMMatrixTranslation(0.01f, 0.0f, 0.0f);
     }
     else if (GetAsyncKeyState('D')) {
-       // cameraViewMatrix_tmp *= XMMatrixTranslation(0.01f, 0.0f, 0.0f);
-        cameraPosition.x += 0.01;
+        cameraViewMatrix_tmp *= XMMatrixTranslation(-0.01f, 0.0f, 0.0f);
     }
 
-   // XMStoreFloat4x4(&cameraViewMat, cameraViewMatrix_tmp);
-
-    XMVECTOR pos = XMVectorSet(cameraPosition.x, cameraPosition.y, cameraPosition.z,1.0f);
-    XMVECTOR target = XMVectorZero();
-    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    XMStoreFloat4x4(&cameraViewMat, cameraViewMatrix_tmp);
 
     XMMATRIX tmpProjMat = XMLoadFloat4x4(&cameraProjMat);
-    XMMATRIX tmpViewMat = XMMatrixLookAtLH(pos, target, up);
-    XMStoreFloat4x4(&cameraViewMat, tmpViewMat);
     XMMATRIX worldMat = XMLoadFloat4x4(&mWorld);
-    XMMATRIX worldViewProj = worldMat * tmpViewMat * tmpProjMat;
+    XMMATRIX worldViewProj = worldMat * cameraViewMatrix_tmp * tmpProjMat;
 
-    XMStoreFloat4x4(&m_constantBufferData.WorldViewProj, worldViewProj);
+    XMStoreFloat4x4(&m_constantBufferData.WorldViewProj, XMMatrixTranspose(worldViewProj));
     memcpy(m_pCbvDataBegin, &m_constantBufferData, sizeof(m_constantBufferData));
 }
 
@@ -676,7 +719,9 @@ void Ground::DrawCommandList()
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     m_commandList->IASetIndexBuffer(&m_indexBufferView);
-    m_commandList->DrawIndexedInstanced(6, 1, 0, 0,0);
+   // m_commandList->DrawIndexedInstanced(6, 1, 0, 0,0);
+
+    m_commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
     // Indicate that the back buffer will now be used to present.
    // auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
