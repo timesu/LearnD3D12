@@ -53,6 +53,11 @@ public:
 	void BuildGeometry();
 	void BuildPSO();
 
+
+
+	void OnUpdate();
+	void UpdateCamera();
+
 	void OnRender();
 	void ResetCommandList();
 	void SetCommandList();
@@ -118,6 +123,13 @@ protected:
 
 	}m_constantBufferData;
 
+
+	XMFLOAT4X4 Identity4x4  = XMFLOAT4X4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
+
 	XMFLOAT4X4 mWorld = XMFLOAT4X4(
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
@@ -145,6 +157,13 @@ protected:
 	ComPtr<ID3DBlob> vertexShader;
 	ComPtr<ID3DBlob> pixelShader;
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputElementDescs;
+
+	//camera setting
+	XMFLOAT4X4 cameraProjMat = Identity4x4;
+	XMFLOAT4X4 cameraViewMat = Identity4x4;
+	XMFLOAT4 cameraPosition = XMFLOAT4(0.0f, 3.0f, -1.0f, 0.0f);
+	XMFLOAT4 cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	XMFLOAT4 cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 
 
 };

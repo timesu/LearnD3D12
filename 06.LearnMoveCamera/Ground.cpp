@@ -2,7 +2,7 @@
 
 #include "DirectXColors.h"
 
-#include "d3dx12.h"
+//#include "d3dx12.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -47,6 +47,7 @@ LRESULT Ground::MsgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 
     case WM_PAINT:
+        OnUpdate();
         OnRender();
         return 0;
 
@@ -74,7 +75,7 @@ bool Ground::InitMainWindow()
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"06.LearnGround",
+        L"06.LearnMoveCamera",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -233,17 +234,53 @@ void Ground::BuildRootSignature()
         D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
         D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
 
-    CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-    CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+   // CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+   // ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
 
-    ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-    rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
+    D3D12_DESCRIPTOR_RANGE1 ranges[1];
+    ranges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+    ranges[0].NumDescriptors = 1;
+    ranges[0].BaseShaderRegister = 0;
+    ranges[0].RegisterSpace = 0;
+    ranges[0].Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
+    ranges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-    CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+   // CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+   // rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
+
+    D3D12_ROOT_PARAMETER1 rootParameters[1];
+    rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    rootParameters[0].DescriptorTable.NumDescriptorRanges = 1;
+    rootParameters[0].DescriptorTable.pDescriptorRanges = &ranges[0];
+    rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+  //  CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+   // rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+
+    D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    rootSignatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_1;
+    rootSignatureDesc.Desc_1_1.NumParameters = _countof(rootParameters);
+    rootSignatureDesc.Desc_1_1.pParameters = rootParameters;
+    rootSignatureDesc.Desc_1_1.NumStaticSamplers = 0;
+    rootSignatureDesc.Desc_1_1.pStaticSamplers = nullptr;
+    rootSignatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+    /*D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    rootSignatureDesc.NumParameters = _countof(rootParameters);
+    rootSignatureDesc.pParameters = rootParameters[0];
+    rootSignatureDesc.NumStaticSamplers = 0;
+    rootSignatureDesc.pStaticSamplers = nullptr;
+    rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;*/
+
+
+
+
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
-    D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+   // D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+    HRESULT hr = D3D12SerializeVersionedRootSignature(&rootSignatureDesc,
+        signature.GetAddressOf(), error.GetAddressOf());
+    
     m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
 
 }
@@ -385,28 +422,18 @@ void Ground::BuildGeometry()
 
 void Ground::BuildCamera()
 {
-    XMMATRIX cameraProjMat;
-    XMMATRIX cameraViewMat;
-
-    auto cameraPosition = XMFLOAT4(0.0f, 5.0f, -4.0f, 0.0f);
-    auto cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
-    auto cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-
     XMVECTOR cPos = XMLoadFloat4(&cameraPosition);
     XMVECTOR cTarg = XMLoadFloat4(&cameraTarget);
     XMVECTOR cUp = XMLoadFloat4(&cameraUp);
 
-    //XMMATRIX modelMat = 
-
-    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)1280 / (float)720, 4.0f, 20.0f);
-    cameraProjMat = tmpProjMat;
+    XMMATRIX tmpProjMat = XMMatrixPerspectiveFovLH(45.0f * (3.14f / 180.0f), (float)1280 / (float)720, 1.0f, 100.0f);
+    XMStoreFloat4x4(&cameraProjMat, tmpProjMat);
 
     XMMATRIX tmpViewMat = XMMatrixLookAtLH(cPos, cTarg, cUp);
-    cameraViewMat = tmpViewMat;
+    XMStoreFloat4x4(&cameraViewMat, tmpViewMat);
 
     XMMATRIX worldMat = XMLoadFloat4x4(&mWorld);
-    XMMATRIX worldViewProj = worldMat * cameraViewMat * cameraProjMat;
-
+    XMMATRIX worldViewProj = worldMat * tmpViewMat * tmpProjMat;
 
     XMStoreFloat4x4(&m_constantBufferData.WorldViewProj, worldViewProj);
     
@@ -526,6 +553,47 @@ void Ground::BuildPSO()
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     psoDesc.SampleDesc.Count = 1;
     m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
+}
+
+void Ground::OnUpdate()
+{
+    UpdateCamera();
+
+    
+}
+
+void Ground::UpdateCamera()
+{
+    /*auto cameraPosition = XMFLOAT4(0.0f, 5.0f, -4.0f, 0.0f);
+    auto cameraTarget = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+    auto cameraUp = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);*/
+    //A simple method
+    //https://gamedev.stackexchange.com/questions/152654/moving-camera-in-3d-directx12
+    XMMATRIX cameraViewMatrix_tmp = XMLoadFloat4x4(&cameraViewMat);
+
+    if (GetAsyncKeyState('W')) {
+        cameraViewMatrix_tmp *= XMMatrixTranslation(0.0f, 0.0f, -0.01f);
+    }
+    else if (GetAsyncKeyState('S')) {
+        cameraViewMatrix_tmp *= XMMatrixTranslation(0.0f, 0.0f, 0.01f);
+    }
+
+    //Move Right and Left
+    if (GetAsyncKeyState('A')) {
+        cameraViewMatrix_tmp *= XMMatrixTranslation(0.01f, 0.0f, 0.0f);
+    }
+    else if (GetAsyncKeyState('D')) {
+        cameraViewMatrix_tmp *= XMMatrixTranslation(-0.01f, 0.0f, 0.0f);
+    }
+
+    XMStoreFloat4x4(&cameraViewMat, cameraViewMatrix_tmp);
+
+    XMMATRIX tmpProjMat = XMLoadFloat4x4(&cameraProjMat);
+    XMMATRIX worldMat = XMLoadFloat4x4(&mWorld);
+    XMMATRIX worldViewProj = worldMat * cameraViewMatrix_tmp * tmpProjMat;
+
+    XMStoreFloat4x4(&m_constantBufferData.WorldViewProj, worldViewProj);
+    memcpy(m_pCbvDataBegin, &m_constantBufferData, sizeof(m_constantBufferData));
 }
 
 void Ground::OnRender()
