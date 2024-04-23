@@ -11,27 +11,34 @@ cbuffer cbPerObject : register(b0)
     float4x4 gWorldViewProj;
 };
 
+Texture2D g_texture : register(t0);
+SamplerState g_sampler : register(s0);
+
 struct PSInput
 {
     float4 position : SV_POSITION;
     float4 color : COLOR;
+    float2 uv : TEXCOORD;
 };
 
-PSInput VSMain(float3 position : POSITION, float4 color : COLOR)
+PSInput VSMain(float3 position : POSITION, float4 color : COLOR, float4 uv : TEXCOORD)
 {
     PSInput result;
 
     //result.position = mul(position, gWorldViewProj);
     result.position = mul(float4(position, 1.0f), gWorldViewProj);
    // result.position = float4(position, 1.0f);
-    result.color = color;
+   // result.color = color;
+   // float4 texC = mul(float4(vin.TexC, 0.0f, 1.0f), gTexTransform);
+    result.uv = uv;
 
     return result;
 }
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color;
+   // return input.color;
+    return g_texture.Sample(g_sampler, input.uv);
 }
 
 //cbuffer cbPerObject : register(b0)

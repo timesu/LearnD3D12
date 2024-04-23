@@ -2,11 +2,11 @@
 
 #include "DirectXColors.h"
 
-//#include "d3dx12.h"
+#include "d3dx12.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
-
+#pragma comment(lib, "dxguid.lib")
 struct Vertex
 {
     XMFLOAT3 Pos;
@@ -69,14 +69,14 @@ bool TexturedBox::InitMainWindow()
     windowClass.lpfnWndProc = MainWndProc;
     windowClass.hInstance = mhAppInst;
     windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    windowClass.lpszClassName = L"LearnBox";
+    windowClass.lpszClassName = L"LearnTexturedBox";
     RegisterClassEx(&windowClass);
 
     RECT windowRect = { 0, 0, 1280, 720 };
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"07.LearnBox",
+        L"08.LearnTexturedBox",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -208,10 +208,16 @@ void TexturedBox::LoadAssets()
 {
 
         BuildRootSignature();
+        BuildTexture();
+
+        m_commandList->Close();
+        ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+        m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
         BuildShadersAndInputLayout();
         BuildGeometry();
         BuildCamera();
         BuildConstangBuffer();
+     //   BuildTexture();
         BuildPSO();
 
     
@@ -219,63 +225,12 @@ void TexturedBox::LoadAssets()
 }
 void TexturedBox::BuildRootSignature()
 {
-   
+    CD3DX12_DESCRIPTOR_RANGE texTable;
+    texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+    CD3DX12_ROOT_PARAMETER slotRootParameter[2];
+    slotRootParameter[0].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
+    slotRootParameter[1].InitAsConstantBufferView(0,0, D3D12_SHADER_VISIBILITY_ALL);
 
-
-    D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-        D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-
-   // CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-   // ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-
-    /*D3D12_DESCRIPTOR_RANGE1 ranges[1];
-    ranges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-    ranges[0].NumDescriptors = 1;
-    ranges[0].BaseShaderRegister = 0;
-    ranges[0].RegisterSpace = 0;
-    ranges[0].Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
-    ranges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;*/
-
-    D3D12_DESCRIPTOR_RANGE1 cbvTable;
-    cbvTable.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-    cbvTable.NumDescriptors = 1;
-    cbvTable.BaseShaderRegister = 0;
-    cbvTable.RegisterSpace = 0;
-    cbvTable.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
-    cbvTable.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-    D3D12_DESCRIPTOR_RANGE1 srvTable;
-    cbvTable.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-    cbvTable.NumDescriptors = 1;
-    cbvTable.BaseShaderRegister = 0;
-    cbvTable.RegisterSpace = 0;
-    cbvTable.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_NONE;
-    cbvTable.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-   // CD3DX12_ROOT_PARAMETER1 rootParameters[1];
-   // rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
-
-    /*D3D12_ROOT_PARAMETER1 slotParameters[1];
-    slotParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-    slotParameters[0].DescriptorTable.NumDescriptorRanges = 1;
-    slotParameters[0].DescriptorTable.pDescriptorRanges = &cbvTable;
-    slotParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;*/
-
-   D3D12_ROOT_PARAMETER1 slotParameters[2];
-   //CBV 
-   slotParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-   slotParameters[0].DescriptorTable.NumDescriptorRanges = 1;
-   slotParameters[0].DescriptorTable.pDescriptorRanges = &cbvTable;
-   slotParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-   //SRV
-   slotParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-   slotParameters[1].DescriptorTable.NumDescriptorRanges = 1;
-   slotParameters[1].DescriptorTable.pDescriptorRanges = &srvTable;
-   slotParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 
    D3D12_STATIC_SAMPLER_DESC sampler = {};
@@ -295,29 +250,16 @@ void TexturedBox::BuildRootSignature()
   //  CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
    // rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
 
-    D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1_1;
-    rootSignatureDesc.Desc_1_1.NumParameters = _countof(slotParameters);
-    rootSignatureDesc.Desc_1_1.pParameters = slotParameters;
-    rootSignatureDesc.Desc_1_1.NumStaticSamplers = 0;
-   // rootSignatureDesc.Desc_1_1.pStaticSamplers = nullptr;
-    rootSignatureDesc.Desc_1_1.pStaticSamplers = &sampler;
-    rootSignatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-    /*D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-    rootSignatureDesc.NumParameters = _countof(rootParameters);
-    rootSignatureDesc.pParameters = rootParameters[0];
-    rootSignatureDesc.NumStaticSamplers = 0;
-    rootSignatureDesc.pStaticSamplers = nullptr;
-    rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;*/
-
-
+   
+   CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(2, slotRootParameter, 1,
+       &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+ 
 
 
     ComPtr<ID3DBlob> signature;
     ComPtr<ID3DBlob> error;
    // D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
-    HRESULT hr = D3D12SerializeVersionedRootSignature(&rootSignatureDesc,
+    HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1,
         signature.GetAddressOf(), error.GetAddressOf());
     
     m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
@@ -340,7 +282,7 @@ void TexturedBox::BuildShadersAndInputLayout()
    {
        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-       { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+       { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 
    };
 
@@ -359,46 +301,122 @@ void TexturedBox::BuildGeometry()
         Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) }),
         Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
     };*/
-
+/*
    Vertex TexturedBoxVertices[] =
    {
-       Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White)  ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black)  ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red)    ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green)  ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2()}),
-       Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2()})
-   };                                                                   
+       Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White)  ,XMFLOAT2(0.0f,1.0f)}),
+       Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black)  ,XMFLOAT2(0.0f,0.0f)}),
+       Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red)    ,XMFLOAT2(1.0f,0.0f)}),
+       Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green)  ,XMFLOAT2(1.0f,1.0f)}),
+       Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(1.0f,1.0f)}),
+       Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(1.0f,0.0f)}),
+       Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(1.0f,0.0f)}),
+       Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(0.0f,0.0f)})
+   };  */     
 
  
+  Vertex TexturedBoxVertices[] =
+  {
+      //Front Face
+      Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White)  ,XMFLOAT2(0.0f,1.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black)  ,XMFLOAT2(0.0f,0.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red)    ,XMFLOAT2(1.0f,0.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green)  ,XMFLOAT2(1.0f,1.0f)}),
 
-    uint16_t TexturedBoxIndices[] =
+      //Back Face
+      Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(1.0f,1.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(0.0f,1.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(0.0f,0.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(1.0f,0.0f)}),
+
+      //Top Face
+      Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(0.0f,1.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(0.0f,0.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(1.0f,0.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(1.0f,1.0f)}),
+
+      //Bottom 
+      Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(1.0f,1.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(0.0f,1.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(0.0f,0.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(1.0f,0.0f)}),
+      //Left
+      Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(0.0f,1.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(0.0f,0.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(1.0f,0.0f)}),
+      Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(1.0f,1.0f)}),
+      //Right
+      Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(0.0f,1.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(0.0f,0.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(1.0f,0.0f)}),
+      Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(1.0f,1.0f)}),
+
+      
+  };  
+
+ /*    Vertex TexturedBoxVertices[] =
+ {
+     Vertex({ XMFLOAT3(-1.0f, 1.0f, 0.0f), XMFLOAT4(Colors::White)  ,XMFLOAT2(0.0f,0.0f)}),
+     Vertex({ XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT4(Colors::Black)  ,XMFLOAT2(1.0f,0.0f)}),
+     Vertex({ XMFLOAT3(+1.0f, -1.0f, 0.0f), XMFLOAT4(Colors::Red)    ,XMFLOAT2(1.0f,1.0f)}),
+     Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green)  ,XMFLOAT2(0.0f,1.0f)})
+     
+ };*/
+ 
+
+    //uint16_t TexturedBoxIndices[] =
+    //{
+    //   // 0, 1, 2, 2, 3, 0
+    //    // front face
+    //    0, 1, 2,
+    //    0, 2, 3,
+
+    //    // back face
+    //    4, 6, 5,
+    //    4, 7, 6,
+
+    //    // left face
+    //    4, 5, 1,
+    //    4, 1, 0,
+
+    //    // right face
+    //    3, 2, 6,
+    //    3, 6, 7,
+
+    //    // top face
+    //    1, 5, 6,
+    //    1, 6, 2,
+
+    //    // bottom face
+    //    4, 0, 3,
+    //    4, 3, 7
+    //};
+
+   uint16_t TexturedBoxIndices[] =
     {
-        // front face
-        0, 1, 2,
-        0, 2, 3,
+       //Front
+       0,1,2,
+       0,2,3,
 
-        // back face
-        4, 6, 5,
-        4, 7, 6,
+       //Back
+       4,5,6,
+       4,6,7,
 
-        // left face
-        4, 5, 1,
-        4, 1, 0,
+       //Top
+       8,9,10,
+       8,10,11,
 
-        // right face
-        3, 2, 6,
-        3, 6, 7,
+       //Bottom
+       12,13,14,
+       12,14,15,
 
-        // top face
-        1, 5, 6,
-        1, 6, 2,
+       //Left
+       16,17,18,
+       16,18,19,
 
-        // bottom face
-        4, 0, 3,
-        4, 3, 7
+       //Right
+       20,21,22,
+       20,22,23
     };
 
    // const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -559,6 +577,64 @@ void TexturedBox::BuildConstangBuffer()
  
 }
 
+void TexturedBox::BuildTexture()
+{
+    D3D12_RESOURCE_DESC textureDesc = {};
+    textureDesc.MipLevels = 1;
+    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    textureDesc.Width = TextureWidth;
+    textureDesc.Height = TextureHeight;
+    textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+    textureDesc.DepthOrArraySize = 1;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+
+    auto deaultHeap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+    m_device->CreateCommittedResource(
+        &deaultHeap,
+        D3D12_HEAP_FLAG_NONE,
+        &textureDesc,
+        D3D12_RESOURCE_STATE_COPY_DEST,
+        nullptr,
+        IID_PPV_ARGS(&m_texture));
+
+    const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_texture.Get(), 0, 1);
+
+    // Create the GPU upload buffer.
+    auto upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto buffer = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+    m_device->CreateCommittedResource(
+        &upload,
+        D3D12_HEAP_FLAG_NONE,
+        &buffer,
+        D3D12_RESOURCE_STATE_GENERIC_READ,
+        nullptr,
+        IID_PPV_ARGS(&textureUploadHeap));
+
+    // Copy data to the intermediate upload heap and then schedule a copy 
+    // from the upload heap to the Texture2D.
+    std::vector<UINT8> texture = GenerateTextureData();
+
+    D3D12_SUBRESOURCE_DATA textureData = {};
+    textureData.pData = &texture[0];
+    textureData.RowPitch = TextureWidth * TexturePixelSize;
+    textureData.SlicePitch = textureData.RowPitch * TextureHeight;
+
+    auto trans = CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+    UpdateSubresources(m_commandList.Get(), m_texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
+    m_commandList->ResourceBarrier(1, &trans);
+
+    // Describe and create a SRV for the texture.
+    D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+    srvDesc.Format = textureDesc.Format;
+    srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MipLevels = 1;
+    m_device->CreateShaderResourceView(m_texture.Get(), &srvDesc, m_srvHeap->GetCPUDescriptorHandleForHeapStart());
+
+}
 
 void TexturedBox::BuildPSO()
 {
@@ -694,11 +770,13 @@ void TexturedBox::SetCommandList()
 
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
 
-    ID3D12DescriptorHeap* ppHeaps[] = { m_cbvHeap.Get() };
+   /* ID3D12DescriptorHeap* ppHeaps[] = { m_cbvHeap.Get() };
     m_commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-    m_commandList->SetGraphicsRootDescriptorTable(0, m_cbvHeap->GetGPUDescriptorHandleForHeapStart());
+    m_commandList->SetGraphicsRootDescriptorTable(0, m_cbvHeap->GetGPUDescriptorHandleForHeapStart());*/
 
-
+    ID3D12DescriptorHeap* descriptorHeaps[] = { m_srvHeap.Get() };
+    m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+    m_commandList->SetGraphicsRootDescriptorTable(0, m_srvHeap->GetGPUDescriptorHandleForHeapStart());
 
 
     m_commandList->RSSetViewports(1, &m_viewport);
@@ -726,11 +804,21 @@ void TexturedBox::SetCommandList()
 }
 void TexturedBox::DrawCommandList()
 {
+
+
+    CD3DX12_GPU_DESCRIPTOR_HANDLE tex(m_srvHeap->GetGPUDescriptorHandleForHeapStart());
+    m_commandList->SetGraphicsRootDescriptorTable(0, tex);
+
+    D3D12_GPU_VIRTUAL_ADDRESS constantAddress = m_constantBuffer->GetGPUVirtualAddress();
+    m_commandList->SetGraphicsRootConstantBufferView(1, constantAddress);
     // Record commands.
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     m_commandList->IASetIndexBuffer(&m_indexBufferView);
    // m_commandList->DrawIndexedInstanced(6, 1, 0, 0,0);
+
+   
+
 
     m_commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
@@ -800,16 +888,16 @@ std::vector<UINT8> TexturedBox::GenerateTextureData()
 
         if (i % 2 == j % 2)
         {
-            pData[n] = 0x00;        // R
-            pData[n + 1] = 0x00;    // G
-            pData[n + 2] = 0x00;    // B
+            pData[n] = 0xff;        // R
+            pData[n + 1] = 0xff;    // G
+            pData[n + 2] = 0xff;    // B
             pData[n + 3] = 0xff;    // A
         }
         else
         {
-            pData[n] = 0xff;        // R
-            pData[n + 1] = 0xff;    // G
-            pData[n + 2] = 0xff;    // B
+            pData[n]     = 0x00;    // R
+            pData[n + 1] = 0x00;    // G
+            pData[n + 2] = 0x00;    // B
             pData[n + 3] = 0xff;    // A
         }
     }
