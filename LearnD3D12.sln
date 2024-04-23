@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "06.LearnMoveCamera", "06.Le
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "07.LearnBox", "07.LearnBox\07.LearnBox.vcxproj", "{34632093-77BD-4A7C-89FF-BBA3E5B7002A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "08.LearnTexturedBox", "08.LearnTexturedBox\08.LearnTexturedBox.vcxproj", "{96723A45-4452-42F1-B574-C813DE599460}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -81,6 +83,14 @@ Global
 		{34632093-77BD-4A7C-89FF-BBA3E5B7002A}.Release|x64.Build.0 = Release|x64
 		{34632093-77BD-4A7C-89FF-BBA3E5B7002A}.Release|x86.ActiveCfg = Release|Win32
 		{34632093-77BD-4A7C-89FF-BBA3E5B7002A}.Release|x86.Build.0 = Release|Win32
+		{96723A45-4452-42F1-B574-C813DE599460}.Debug|x64.ActiveCfg = Debug|x64
+		{96723A45-4452-42F1-B574-C813DE599460}.Debug|x64.Build.0 = Debug|x64
+		{96723A45-4452-42F1-B574-C813DE599460}.Debug|x86.ActiveCfg = Debug|Win32
+		{96723A45-4452-42F1-B574-C813DE599460}.Debug|x86.Build.0 = Debug|Win32
+		{96723A45-4452-42F1-B574-C813DE599460}.Release|x64.ActiveCfg = Release|x64
+		{96723A45-4452-42F1-B574-C813DE599460}.Release|x64.Build.0 = Release|x64
+		{96723A45-4452-42F1-B574-C813DE599460}.Release|x86.ActiveCfg = Release|Win32
+		{96723A45-4452-42F1-B574-C813DE599460}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
