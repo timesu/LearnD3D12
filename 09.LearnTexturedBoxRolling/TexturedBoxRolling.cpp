@@ -93,7 +93,7 @@ bool TexturedBoxRolling::InitMainWindow()
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"08.LearnTexturedBoxRolling",
+        L"09.LearnTexturedBoxRolling",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -238,20 +238,33 @@ void TexturedBoxRolling::LoadAssets()
 }
 void TexturedBoxRolling::BuildRootSignature()
 {
-    CD3DX12_DESCRIPTOR_RANGE texTable;
-    texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+   /* CD3DX12_DESCRIPTOR_RANGE texTable;
+    texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);*/
 
-   /* D3D12_DESCRIPTOR_RANGE texTable;
+    D3D12_DESCRIPTOR_RANGE texTable;
     texTable.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
     texTable.NumDescriptors = 1;
     texTable.BaseShaderRegister = 0;
-    texTable.RegisterSpace = 0;*/
+    texTable.RegisterSpace = 0;
+    texTable.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
     CD3DX12_ROOT_PARAMETER slotRootParameter[2];
     slotRootParameter[0].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
     slotRootParameter[1].InitAsConstantBufferView(0);
 
+    //D3D12_ROOT_PARAMETER testRootParameter[2];
+    //testRootParameter[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+    //testRootParameter[0].DescriptorTable.NumDescriptorRanges = 1;
+    //testRootParameter[0].DescriptorTable.pDescriptorRanges = &texTable;
+    //testRootParameter[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+    //testRootParameter[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+    //testRootParameter[1].DescriptorTable.pDescriptorRanges = nullptr;
+    //testRootParameter[1].DescriptorTable.NumDescriptorRanges = 1;
+    //testRootParameter[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+
+    
 
    D3D12_STATIC_SAMPLER_DESC sampler = {};
    sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
@@ -267,13 +280,14 @@ void TexturedBoxRolling::BuildRootSignature()
    sampler.ShaderRegister = 0;
    sampler.RegisterSpace = 0;
    sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-  //  CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
-   // rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+ /*   CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc;
+    rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);*/
 
    
    CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(2, slotRootParameter, 1,
        &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
- 
+   //CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(2, testRootParameter, 1,
+   //    &sampler, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT); 
 
 
     ComPtr<ID3DBlob> signature;
