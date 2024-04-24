@@ -129,8 +129,8 @@ void TexturedBox::CreateCommandObjects()
 
     m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue));
     m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator));
-    m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList));
-    m_commandList->Close();
+   // m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList));
+  //  m_commandList->Close();
 }
 
 void TexturedBox::CreateSwapChain()
@@ -208,17 +208,15 @@ void TexturedBox::LoadAssets()
 {
 
         BuildRootSignature();
-        BuildTexture();
-
-        m_commandList->Close();
-        ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
-        m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+     //   BuildTexture();
         BuildShadersAndInputLayout();
+        BuildPSO();
         BuildGeometry();
+        BuildTexture();
         BuildCamera();
         BuildConstangBuffer();
-     //   BuildTexture();
-        BuildPSO();
+      // BuildTexture();
+     //   BuildPSO();
 
     
 
@@ -227,9 +225,10 @@ void TexturedBox::BuildRootSignature()
 {
     CD3DX12_DESCRIPTOR_RANGE texTable;
     texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+
     CD3DX12_ROOT_PARAMETER slotRootParameter[2];
     slotRootParameter[0].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
-    slotRootParameter[1].InitAsConstantBufferView(0,0, D3D12_SHADER_VISIBILITY_ALL);
+    slotRootParameter[1].InitAsConstantBufferView(0);
 
 
 
@@ -694,7 +693,9 @@ void TexturedBox::BuildPSO()
     psoDesc.NumRenderTargets = 1;
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     psoDesc.SampleDesc.Count = 1;
+    /////////
     m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
+    m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList));
 }
 
 void TexturedBox::OnUpdate()
@@ -837,9 +838,11 @@ void TexturedBox::DrawCommandList()
 }
 void TexturedBox::ExecuteCommandList()
 {
+    m_commandList->Close();
     ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
+    WaitForPreviousFrame();
     // Present the frame.
     m_swapChain->Present(1, 0);
 }

@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "07.LearnBox", "07.LearnBox\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "08.LearnTexturedBox", "08.LearnTexturedBox\08.LearnTexturedBox.vcxproj", "{96723A45-4452-42F1-B574-C813DE599460}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "000.Test", "000.Test\000.Test.vcxproj", "{5CA5C526-24CD-4456-A99C-FC9D687AE931}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -91,6 +93,14 @@ Global
 		{96723A45-4452-42F1-B574-C813DE599460}.Release|x64.Build.0 = Release|x64
 		{96723A45-4452-42F1-B574-C813DE599460}.Release|x86.ActiveCfg = Release|Win32
 		{96723A45-4452-42F1-B574-C813DE599460}.Release|x86.Build.0 = Release|Win32
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Debug|x64.ActiveCfg = Debug|x64
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Debug|x64.Build.0 = Debug|x64
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Debug|x86.ActiveCfg = Debug|Win32
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Debug|x86.Build.0 = Debug|Win32
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Release|x64.ActiveCfg = Release|x64
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Release|x64.Build.0 = Release|x64
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Release|x86.ActiveCfg = Release|Win32
+		{5CA5C526-24CD-4456-A99C-FC9D687AE931}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

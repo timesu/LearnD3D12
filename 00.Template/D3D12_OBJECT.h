@@ -101,17 +101,6 @@ private:
 
     //Introduction to 3D Game Programming with d3d12 style
     //TO DO
-    void BuildSwapChain();
-    void BuildDescriptorHeaps();
-    void BuildFrameResource();
-    void BuildConstanBuffers();
-    void BuildRootSignature();
-    void BuildShaderAndInputLayout();
-    void BuildGeometry();
-    void BuildPso();
-
-
-
     void LoadPipeline();
     void LoadAssets();
     std::vector<UINT8> GenerateTextureData();

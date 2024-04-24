@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{07628dea-a5c8-46eb-b6a6-892790cc0059}</ProjectGuid>
-    <RootNamespace>HelloD3D12NewHireProject</RootNamespace>
+    <ProjectGuid>{5ca5c526-24cd-4456-a99c-fc9d687ae931}</ProjectGuid>
+    <RootNamespace>My000Test</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -109,12 +109,6 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <FxCompile>
-      <ShaderModel>5.0</ShaderModel>
-      <ShaderType>
-      </ShaderType>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -133,16 +127,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="D3D12_OBJECT.cpp" />
-    <ClCompile Include="Win32Application.cpp" />
+    <ClCompile Include="000.Test.cpp" />
+    <ClCompile Include="Square.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D3D12_OBJECT.h" />
     <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="Win32Application.h" />
+    <ClInclude Include="Square.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="shaders.hlsl">
+    <FxCompile Include="000.test.shaders.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
