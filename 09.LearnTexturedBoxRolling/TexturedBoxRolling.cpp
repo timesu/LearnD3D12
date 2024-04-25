@@ -93,7 +93,7 @@ bool TexturedBoxRolling::InitMainWindow()
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"09.LearnTexturedBoxRolling",
+        L"0.LearnTexturedBoxRolling",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -233,8 +233,7 @@ void TexturedBoxRolling::LoadAssets()
         BuildConstangBuffer();
  
 
-    
-
+ 
 }
 void TexturedBoxRolling::BuildRootSignature()
 {
