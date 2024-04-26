@@ -146,8 +146,7 @@ void TexturedBoxRolling::CreateCommandObjects()
 
     m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue));
     m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator));
-   // m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList));
-  //  m_commandList->Close();
+
 }
 
 void TexturedBoxRolling::CreateSwapChain()
