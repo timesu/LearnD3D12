@@ -93,7 +93,7 @@ bool TexturedBoxRolling::InitMainWindow()
 
     mhMainWnd = CreateWindow(
         windowClass.lpszClassName,
-        L"09.LearnTexturedBoxRolling",
+        L"10.LearnTexturedBoxAndQuad",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -250,20 +250,6 @@ void TexturedBoxRolling::BuildRootSignature()
     slotRootParameter[0].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
     slotRootParameter[1].InitAsConstantBufferView(0);
 
-    //D3D12_ROOT_PARAMETER testRootParameter[2];
-    //testRootParameter[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-    //testRootParameter[0].DescriptorTable.NumDescriptorRanges = 1;
-    //testRootParameter[0].DescriptorTable.pDescriptorRanges = &texTable;
-    //testRootParameter[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-
-    //testRootParameter[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-    //testRootParameter[1].DescriptorTable.pDescriptorRanges = nullptr;
-    //testRootParameter[1].DescriptorTable.NumDescriptorRanges = 1;
-    //testRootParameter[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-
-
-    
-
    D3D12_STATIC_SAMPLER_DESC sampler = {};
    sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
    sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
@@ -301,8 +287,8 @@ void TexturedBoxRolling::BuildRootSignature()
 void TexturedBoxRolling::BuildShadersAndInputLayout()
 {
     UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-    D3DCompileFromFile(L"09.shaders.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr);
-    D3DCompileFromFile(L"09.shaders.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr);
+    D3DCompileFromFile(L"10.shaders.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr);
+    D3DCompileFromFile(L"10.shaders.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr);
 
     // Define the vertex input layout.
    /* inputElementDescs =
@@ -322,30 +308,6 @@ void TexturedBoxRolling::BuildShadersAndInputLayout()
 
 void TexturedBoxRolling::BuildGeometry()
 {
- /*   Vertex TexturedBoxRollingVertices[] =
-    {
-        Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
-        Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) }),
-        Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) }),
-        Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) }),
-        Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) }),
-        Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) }),
-        Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) }),
-        Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
-    };*/
-/*
-   Vertex TexturedBoxRollingVertices[] =
-   {
-       Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White)  ,XMFLOAT2(0.0f,1.0f)}),
-       Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black)  ,XMFLOAT2(0.0f,0.0f)}),
-       Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red)    ,XMFLOAT2(1.0f,0.0f)}),
-       Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green)  ,XMFLOAT2(1.0f,1.0f)}),
-       Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue)   ,XMFLOAT2(1.0f,1.0f)}),
-       Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) ,XMFLOAT2(1.0f,0.0f)}),
-       Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan)   ,XMFLOAT2(1.0f,0.0f)}),
-       Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta),XMFLOAT2(0.0f,0.0f)})
-   };  */     
-
  
   Vertex TexturedBoxRollingVertices[] =
   {
@@ -385,44 +347,6 @@ void TexturedBoxRolling::BuildGeometry()
 
       
   };  
-
- /*    Vertex TexturedBoxRollingVertices[] =
- {
-     Vertex({ XMFLOAT3(-1.0f, 1.0f, 0.0f), XMFLOAT4(Colors::White)  ,XMFLOAT2(0.0f,0.0f)}),
-     Vertex({ XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT4(Colors::Black)  ,XMFLOAT2(1.0f,0.0f)}),
-     Vertex({ XMFLOAT3(+1.0f, -1.0f, 0.0f), XMFLOAT4(Colors::Red)    ,XMFLOAT2(1.0f,1.0f)}),
-     Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green)  ,XMFLOAT2(0.0f,1.0f)})
-     
- };*/
- 
-
-    //uint16_t TexturedBoxRollingIndices[] =
-    //{
-    //   // 0, 1, 2, 2, 3, 0
-    //    // front face
-    //    0, 1, 2,
-    //    0, 2, 3,
-
-    //    // back face
-    //    4, 6, 5,
-    //    4, 7, 6,
-
-    //    // left face
-    //    4, 5, 1,
-    //    4, 1, 0,
-
-    //    // right face
-    //    3, 2, 6,
-    //    3, 6, 7,
-
-    //    // top face
-    //    1, 5, 6,
-    //    1, 6, 2,
-
-    //    // bottom face
-    //    4, 0, 3,
-    //    4, 3, 7
-    //};
 
    uint16_t TexturedBoxRollingIndices[] =
     {
@@ -733,8 +657,22 @@ void TexturedBoxRolling::BuildPSO()
 
 void TexturedBoxRolling::OnUpdate()
 {
-   // UpdateCamera();
-    UpdateMouse();
+    if (GetAsyncKeyState('1'))
+    {
+        camera_mode = 1;
+    }
+    if (GetAsyncKeyState('2'))
+    {
+        camera_mode = 0;
+    }
+    if (camera_mode == 1)
+    {
+        UpdateCamera();
+    }
+    else
+    {
+        UpdateMouse();
+    }
     
 }
 
