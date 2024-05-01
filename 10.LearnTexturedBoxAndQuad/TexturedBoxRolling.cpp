@@ -1,7 +1,7 @@
 #include "TexturedBoxRolling.h"
 
 #include "DirectXColors.h"
-
+#include "GeometryGenerator.h"
 #include "d3dx12.h"
 
 #define GET_X_LPARAM(lp)                        ((int)(short)LOWORD(lp))
@@ -296,12 +296,11 @@ void TexturedBoxRolling::BuildShadersAndInputLayout()
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
         { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
     };*/
-     inputElementDescs =
+   inputElementDescs =
    {
        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-
    };
 
 }
@@ -375,16 +374,28 @@ void TexturedBoxRolling::BuildGeometry()
        20,22,23
     };
 
-   // const UINT vertexBufferSize = sizeof(triangleVertices);
-    const UINT vertexBufferSize = sizeof(TexturedBoxRollingVertices);
-    const UINT indexBufferSize = sizeof(TexturedBoxRollingIndices);
+    //const UINT vertexBufferSize = sizeof(TexturedBoxRollingVertices);
+    //const UINT indexBufferSize = sizeof(TexturedBoxRollingIndices);
 
 
-    // Note: using upload heaps to transfer static data like vert buffers is not 
-    // recommended. Every time the GPU needs it, the upload heap will be marshalled 
-    // over. Please read up on Default Heap usage. An upload heap is used here for 
-    // code simplicity and because there are very few verts to actually transfer.
+    GeometryGenerator geoGen;
+    GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f);
+    auto totalVertexCount = box.Vertices.size();
 
+    std::vector<Vertex> vertices(totalVertexCount);
+
+    UINT k = 0;
+    for (size_t i = 0; i < box.Vertices.size(); ++i, ++k)
+    {
+        vertices[k].Pos = box.Vertices[i].Position;
+        vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
+        vertices[k].Tex = box.Vertices[i].TexC;
+    }
+    std::vector<std::uint16_t> indices;
+    indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
+    const UINT vertexBufferSize = (UINT)vertices.size() * sizeof(Vertex);
+    const UINT indexBufferSize = (UINT)indices.size() * sizeof(std::uint16_t);
+    
    // auto heapUpload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
     D3D12_HEAP_PROPERTIES heapUpload;
     heapUpload.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -443,11 +454,13 @@ void TexturedBoxRolling::BuildGeometry()
     readRange.Begin = 0;
     readRange.End = 0;
     m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin));
-    memcpy(pVertexDataBegin, TexturedBoxRollingVertices, sizeof(TexturedBoxRollingVertices));
+   // memcpy(pVertexDataBegin, TexturedBoxRollingVertices, sizeof(TexturedBoxRollingVertices));
+    memcpy(pVertexDataBegin, vertices.data(), (UINT)vertices.size()* sizeof(Vertex));
     m_vertexBuffer->Unmap(0, nullptr);
 
     m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin));
-    memcpy(pIndexDataBegin, TexturedBoxRollingIndices, sizeof(TexturedBoxRollingIndices));
+    //memcpy(pIndexDataBegin, TexturedBoxRollingIndices, sizeof(TexturedBoxRollingIndices));
+    memcpy(pIndexDataBegin, indices.data(), (UINT)indices.size() * sizeof(std::uint16_t));
     m_indexBuffer->Unmap(0, nullptr);
 
     // Initialize the vertex buffer view.
@@ -831,11 +844,6 @@ void TexturedBoxRolling::DrawCommandList()
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     m_commandList->IASetIndexBuffer(&m_indexBufferView);
-   // m_commandList->DrawIndexedInstanced(6, 1, 0, 0,0);
-
-   
-
-
     m_commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
     // Indicate that the back buffer will now be used to present.

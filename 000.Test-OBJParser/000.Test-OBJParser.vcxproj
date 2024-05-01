@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6f9a5da9-e09e-413a-92e2-1cf18baab9ed}</ProjectGuid>
-    <RootNamespace>My10LearnTexturedBoxAndQuad</RootNamespace>
+    <ProjectGuid>{32d45138-4b5e-4e4a-8b91-5f441e55df68}</ProjectGuid>
+    <RootNamespace>My000TestOBJParser</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -106,7 +106,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -127,19 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="10.LearnTexturedBoxRolling.cpp" />
-    <ClCompile Include="GeometryGenerator.cpp" />
-    <ClCompile Include="TexturedBoxRolling.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="10.shaders.hlsl">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="GeometryGenerator.h" />
-    <ClInclude Include="TexturedBoxRolling.h" />
+    <ClCompile Include="test-objparser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
