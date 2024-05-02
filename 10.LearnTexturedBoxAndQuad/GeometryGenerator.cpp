@@ -106,9 +106,9 @@ GeometryGenerator::MeshData GeometryGenerator::CreateBox(float width, float heig
 	return meshData;
 }
 
-GeometryGenerator::MeshData GeometryGenerator::CreateFromObj(string filename)
+GeometryGenerator::ObjMeshData GeometryGenerator::CreateFromObj(string filename)
 {
-	MeshData meshData;
+	ObjMeshData objMeshData;
 	std::ifstream in;
 	in.open(filename);
 	string fileOutput;
@@ -116,7 +116,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateFromObj(string filename)
 	std::vector<XMFLOAT3> positions;
 	std::vector<XMFLOAT3> normals;
 	std::vector<XMFLOAT2> texs;
-	std::vector<int> index;
+	std::vector<int>  index;
 	if (in.is_open())
 	{
 		while (std::getline(in, fileOutput))
@@ -132,6 +132,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateFromObj(string filename)
 				v >> p.z;
 
 				positions.push_back(p);
+				objMeshData.ObjPositions.push_back(p);
 			}
 			else if (fileOutput.substr(0, 3) == "vn ")
 			{
@@ -140,8 +141,10 @@ GeometryGenerator::MeshData GeometryGenerator::CreateFromObj(string filename)
 				v >> n.x;
 				v >> n.y;
 				v >> n.z;
-				
+
 				normals.push_back(n);
+				objMeshData.ObjNormals.push_back(n);
+				
 			}
 			else if ((fileOutput.substr(0, 3) == "vt "))
 			{
@@ -151,6 +154,7 @@ GeometryGenerator::MeshData GeometryGenerator::CreateFromObj(string filename)
 				v >> t.y;
 
 				texs.push_back(t);
+				objMeshData.ObjTexs.push_back(t);
 			}
 			else if ((fileOutput.substr(0, 2) == "f "))
 			{
@@ -171,24 +175,25 @@ GeometryGenerator::MeshData GeometryGenerator::CreateFromObj(string filename)
 				p2--; n2--; t2--;
 				p3--; n3--; t3--;
 
-				index.push_back(p1);
-				index.push_back(n1);
-				index.push_back(t1);
+				objMeshData.ObjIndices.push_back(p1);
+				objMeshData.ObjIndices.push_back(n1);
+				objMeshData.ObjIndices.push_back(t1);
 
-				index.push_back(p2);
-				index.push_back(n2);
-				index.push_back(t2);
+				objMeshData.ObjIndices.push_back(p2);
+				objMeshData.ObjIndices.push_back(n2);
+				objMeshData.ObjIndices.push_back(t2);
 
-				index.push_back(p3);
-				index.push_back(n3);
-				index.push_back(t3);
-
+				objMeshData.ObjIndices.push_back(p3);
+				objMeshData.ObjIndices.push_back(n3);
+				objMeshData.ObjIndices.push_back(t3);
 			}
 		}
+
 	}
 	else
 	{
+
 	}
 
-	return meshData;
+	return objMeshData;
 }

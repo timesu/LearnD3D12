@@ -5,6 +5,15 @@
 #include <string>
 #include <sstream>
 using namespace std;
+using namespace DirectX;
+
+
+struct FaceIndex
+{
+	int PositionIndex;
+	int NormalIndex;
+	int TexIndex;
+};
 
 class GeometryGenerator
 {
@@ -63,8 +72,19 @@ public:
 		std::vector<uint16> mIndices16;
 	};
 
+	struct ObjMeshData
+	{
+		std::vector<XMFLOAT3> ObjPositions;
+		std::vector<XMFLOAT3> ObjNormals;
+		std::vector<XMFLOAT2> ObjTexs;
+		std::vector<int> ObjIndices;
+
+	};
+
+	
+
 	MeshData CreateBox(float width, float height, float depth);
-	MeshData CreateFromObj(string filename);
+	ObjMeshData CreateFromObj(string filename);
 	
 	//MeshData CreateQuad(float x, float y, float w, float h, float depth);
 };

@@ -189,5 +189,7 @@ private:
 	static const UINT TexturePixelSize = 4;
 	std::vector<UINT8> GenerateTextureData();
 
+	int vertex_number = 0;
+
 
 };

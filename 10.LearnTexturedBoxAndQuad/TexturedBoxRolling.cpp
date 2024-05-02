@@ -379,20 +379,42 @@ void TexturedBoxRolling::BuildGeometry()
 
 
     GeometryGenerator geoGen;
-    GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f);
-    auto totalVertexCount = box.Vertices.size();
+   // GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f);
+   // GeometryGenerator::ObjMeshData model = geoGen.CreateFromObj("box-triangle.obj");
+   // GeometryGenerator::ObjMeshData model = geoGen.CreateFromObj("test1-blender.obj");
+    GeometryGenerator::ObjMeshData model = geoGen.CreateFromObj("test2-blender.obj");
 
+  //  auto totalVertexCount = box.Vertices.size();
+    auto totalVertexCount = model.ObjIndices.size();
+    vertex_number = model.ObjIndices.size()/3;
     std::vector<Vertex> vertices(totalVertexCount);
-
+    std::vector<std::uint16_t> indices;
     UINT k = 0;
+
+  /*  indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));  
     for (size_t i = 0; i < box.Vertices.size(); ++i, ++k)
     {
         vertices[k].Pos = box.Vertices[i].Position;
         vertices[k].Color = XMFLOAT4(DirectX::Colors::DarkGreen);
         vertices[k].Tex = box.Vertices[i].TexC;
+    }*/
+
+    vertices[0].Pos = model.ObjPositions[4];
+    size_t size = model.ObjIndices.size() / 3;
+   /// size_t size = box.Vertices.size();
+    for (size_t i = 0; i < size; i++,++k)
+    {
+        int p_index = model.ObjIndices[3*i];
+        int n_index = model.ObjIndices[3*i +1];
+        int t_index = model.ObjIndices[3*i +2];
+
+        vertices[k].Pos = model.ObjPositions[p_index];
+        vertices[k].Color = XMFLOAT4(Colors::Cyan);
+        vertices[k].Tex = model.ObjTexs[t_index];
+        indices.push_back(static_cast<uint16_t>(k));
+
+       
     }
-    std::vector<std::uint16_t> indices;
-    indices.insert(indices.end(), std::begin(box.GetIndices16()), std::end(box.GetIndices16()));
     const UINT vertexBufferSize = (UINT)vertices.size() * sizeof(Vertex);
     const UINT indexBufferSize = (UINT)indices.size() * sizeof(std::uint16_t);
     
@@ -745,9 +767,6 @@ void TexturedBoxRolling::UpdateMouse()
       //  cameraViewMatrix_tmp *= XMMatrixTranslation(-0.01f, 0.0f, 0.0f);
     }
 
-
-
-
     // Build the view matrix.
     XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
     XMVECTOR target = XMVectorZero();
@@ -844,7 +863,10 @@ void TexturedBoxRolling::DrawCommandList()
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     m_commandList->IASetIndexBuffer(&m_indexBufferView);
-    m_commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+
+
+   // m_commandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+    m_commandList->DrawIndexedInstanced(vertex_number, 1, 0, 0, 0);
 
     // Indicate that the back buffer will now be used to present.
    // auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

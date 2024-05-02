@@ -28,7 +28,7 @@ PSInput VSMain(float3 position : POSITION, float4 color : COLOR, float4 uv : TEX
     //result.position = mul(position, gWorldViewProj);
     result.position = mul(float4(position, 1.0f), gWorldViewProj);
    // result.position = float4(position, 1.0f);
-   // result.color = color;
+    result.color = color;
    // float4 texC = mul(float4(vin.TexC, 0.0f, 1.0f), gTexTransform);
     result.uv = uv;
 
@@ -37,8 +37,8 @@ PSInput VSMain(float3 position : POSITION, float4 color : COLOR, float4 uv : TEX
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-   // return input.color;
-    return g_texture.Sample(g_sampler, input.uv);
+    return input.color;
+   // return g_texture.Sample(g_sampler, input.uv);
 }
 
 //cbuffer cbPerObject : register(b0)
